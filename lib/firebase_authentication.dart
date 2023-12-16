@@ -5,7 +5,6 @@ export 'constant/constant.dart';
 export 'remote_repo/remote_repo.dart';
 export 'exception_handling/exception_handling.dart';
 
-
 //*PACKAGES
 export 'package:flutter/material.dart';
 export 'package:firebase_core/firebase_core.dart';
@@ -13,7 +12,7 @@ export 'package:get/get.dart';
 export 'dart:convert';
 export 'package:flutter/foundation.dart';
 export 'package:auth_firebase/feature/home/controller.dart';
-
+export 'package:dartz/dartz.dart' hide State;
 
 export 'package:flutter_screenutil/flutter_screenutil.dart';
 export 'package:fluttertoast/fluttertoast.dart';

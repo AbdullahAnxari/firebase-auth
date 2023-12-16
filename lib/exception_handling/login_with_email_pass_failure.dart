@@ -28,6 +28,10 @@ class LogInWithEmailAndPasswordFailure implements Exception {
         return const LogInWithEmailAndPasswordFailure(
           'Incorrect password, please try again.',
         );
+      case 'network-request-failed':
+        return const LogInWithEmailAndPasswordFailure(
+          'Unable to connect, please try again.',
+        );
       default:
         return const LogInWithEmailAndPasswordFailure();
     }

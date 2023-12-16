@@ -1,4 +1,3 @@
-
 import '../firebase_authentication.dart';
 
 class Auth {
@@ -13,14 +12,21 @@ class Auth {
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
   //*SignIn
-  Future<void> singInWithEmailAndPassword({
+  Future<Either<String, UserCredential>> singInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    ); 
+    try {
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return right(userCredential);
+    } on FirebaseException catch (e) {
+      final error = LogInWithEmailAndPasswordFailure.fromCode(e.code);
+      return left(error.message);
+    }
   }
 
   //*Register
@@ -41,50 +47,68 @@ class Auth {
   }
 
   //*Phone Authentication
-  Future<void> phoneAuthentication(String phoneNo) async {
-    await _firebaseAuth.verifyPhoneNumber(
-      phoneNumber: phoneNo,
-      verificationCompleted: (credential) async {
-        UserCredential user =
-            await _firebaseAuth.signInWithCredential(credential);
-        debugPrint('USer: $user');
-      },
-      codeSent: (verificationId, resendToken) {
-        this.verificationId.value = verificationId;
-      },
-      codeAutoRetrievalTimeout: (verificationId) {},
-      verificationFailed: (e) {
-        if (e.code == 'invalid-phone-number') {
-          Get.snackbar('Error', 'The provided phone number is not valid');
-        } else {
-          Get.snackbar('Error', 'Something went wrong');
-        }
-      },
-    );
+  Future<Either<String, void>> phoneAuthentication(String phoneNo) async {
+    try {
+      await _firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNo,
+        verificationCompleted: (credential) async {
+          UserCredential user =
+              await _firebaseAuth.signInWithCredential(credential);
+          debugPrint('USer: $user');
+        },
+        codeSent: (verificationId, resendToken) {
+          this.verificationId.value = verificationId;
+        },
+        codeAutoRetrievalTimeout: (verificationId) {},
+        verificationFailed: (e) {
+          if (e.code == 'invalid-phone-number') {
+            Get.snackbar('Error', 'The provided phone number is not valid');
+          } else {
+            Get.snackbar('Error', 'Something went wrong');
+          }
+        },
+      );
+      return right(null);
+    } on FirebaseException catch (e) {
+      final error = PhoneAuthFailure.fromCode(e.code);
+      return left(error.message);
+    }
   }
 
   //*OTP
-  Future<bool> verifyOTP(String otp) async {
-    var credentials = await _firebaseAuth.signInWithCredential(
-      PhoneAuthProvider.credential(
-        verificationId: verificationId.value,
-        smsCode: otp,
-      ),
-    );
-    return credentials.user != null ? true : false;
+  Future<Either<String, bool>> verifyOTP(String otp) async {
+    try {
+      var credentials = await _firebaseAuth.signInWithCredential(
+        PhoneAuthProvider.credential(
+          verificationId: verificationId.value,
+          smsCode: otp,
+        ),
+      );
+      return right(credentials.user != null ? true : false);
+    } on FirebaseException catch (e) {
+      final error = PhoneAuthFailure.fromCode(e.code);
+      return left(error.message);
+    }
   }
 
   //*Google
-  Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+  Future<Either<String, UserCredential>> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-    return await _firebaseAuth.signInWithCredential(credential);
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      final userCredentail =
+          await _firebaseAuth.signInWithCredential(credential);
+      return right(userCredentail);
+    } on FirebaseException catch (e) {
+      final error = LogInWithGoogleFailure.fromCode(e.code);
+      return left(error.message);
+    }
   }
 
   //*Anonymous
@@ -97,14 +121,22 @@ class Auth {
   }
 
   //*Facebook
-  Future<UserCredential> signInWithFacebook() async {
-  // Trigger the sign-in flow
-  final LoginResult loginResult = await FacebookAuth.instance.login();
+  Future<Either<String, UserCredential>> signInWithFacebook() async {
+    try {
+      // Trigger the sign-in flow
+      final LoginResult loginResult = await FacebookAuth.instance.login();
 
-  // Create a credential from the access token
-  final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      // Create a credential from the access token
+      final OAuthCredential facebookAuthCredential =
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
-  // Once signed in, return the UserCredential
-  return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-}
+      // Once signed in, return the UserCredential
+      final userCredentail = await FirebaseAuth.instance
+          .signInWithCredential(facebookAuthCredential);
+      return right(userCredentail);
+    } on FirebaseException catch (e) {
+      final error = LogInWithFacebookFailure.fromCode(e.code);
+      return left(error.message);
+    }
+  }
 }

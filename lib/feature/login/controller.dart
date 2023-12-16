@@ -1,9 +1,3 @@
-import 'package:auth_firebase/exception_handling/login_with_anonymous_failure.dart';
-import 'package:auth_firebase/exception_handling/login_with_email_pass_failure.dart';
-import 'package:auth_firebase/exception_handling/login_with_facebook_failure.dart';
-import 'package:auth_firebase/exception_handling/login_with_google_failure.dart';
-import 'package:auth_firebase/exception_handling/phone_auth_failure.dart';
-
 import '../../firebase_authentication.dart';
 
 class LoginController extends GetxController {
@@ -18,49 +12,43 @@ class LoginController extends GetxController {
 
   //*SingIN
   Future<void> signInWithEmailAndPassword() async {
-    try {
-      await Auth().singInWithEmailAndPassword(
-        email: controllerEmail.text,
-        password: controllerPassword.text,
-      );
-    } on FirebaseException catch (e) {
-      final newErrorMessage = LogInWithEmailAndPasswordFailure.fromCode(e.code);
-      Get.snackbar('Error', newErrorMessage.message);
-      update();
-    }
+    final result = await Auth.instance.singInWithEmailAndPassword(
+      email: controllerEmail.text,
+      password: controllerPassword.text,
+    );
+
+    result.fold(
+      (errorMessage) => Get.snackbar('Error', errorMessage),
+      (userCredentail) => null,
+    );
   }
 
   //*PhoneAuth
   Future<void> phoneAuthenticatio() async {
-    try {
-      await Auth().phoneAuthentication(phone.text);
-    } on FirebaseException catch (e) {
-      final newErrorMessage = PhoneAuthFailure.fromCode(e.code);
-      Get.snackbar('Error', newErrorMessage.message);
-      update();
-    }
+    final result = await Auth.instance.phoneAuthentication(phone.text);
+
+    result.fold(
+      (errorMessage) => Get.snackbar('Error', errorMessage),
+      (r) => null,
+    );
   }
 
   //*Google
   Future<void> googleAuthentication() async {
-    try {
-      await Auth().signInWithGoogle();
-    } on FirebaseException catch (e) {
-      final newErrorMessage = LogInWithGoogleFailure.fromCode(e.code);
-      Get.snackbar('Error', newErrorMessage.message);
-      update();
-    }
+    final result = await Auth.instance.signInWithGoogle();
+    result.fold(
+      (errorMessage) => Get.snackbar('Error', errorMessage),
+      (r) => null,
+    );
   }
 
   //*Facebook
   Future<void> facebookAuthentication() async {
-    try {
-      await Auth().signInWithFacebook();
-    } on FirebaseException catch (e) {
-      final newErrorMessage = LogInWithFacebookFailure.fromCode(e.code);
-      Get.snackbar('Error', newErrorMessage.message);
-      update();
-    }
+    final result = await Auth.instance.signInWithFacebook();
+    result.fold(
+      (errorMessage) => Get.snackbar('Error', errorMessage),
+      (r) => null,
+    );
   }
 
   //*Annymously

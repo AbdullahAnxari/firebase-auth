@@ -11,8 +11,14 @@ class PhoneAuthController extends GetxController {
   }
 
   void verifyOTP(String otp) async {
-    var isVerified = await Auth.instance.verifyOTP(otp);
-    isVerified ? Get.offAll(() => const OtpHome()) : Get.back();
+    final result = await Auth.instance.verifyOTP(otp);
+    result.fold(
+      (errorMessage) => Get.showSnackbar(
+        GetSnackBar(message: errorMessage),
+      ),
+      (isVerified) =>
+          isVerified ? Get.offAll(() => const OtpHome()) : Get.back(),
+    );
   }
 
   otpOnComplete(pin) {
