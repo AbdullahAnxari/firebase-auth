@@ -23,7 +23,7 @@ class PhoneAuthView extends GetView<PhoneAuthController> {
             TextButton(
               onPressed: () {
                 controller.setPhoneNum(phoneNo: controller.phoneNo.text);
-                Get.to(OTPView());
+                Get.to(const OTPView());
               },
               child: const Text('Send OTP'),
             ),

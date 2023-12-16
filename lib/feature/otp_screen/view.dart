@@ -1,8 +1,8 @@
 import '../../firebase_authentication.dart';
 
-class OTPView extends GetView {
-  OTPView({super.key});
-  var otp;
+class OTPView extends GetView<PhoneAuthController> {
+  const OTPView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +20,9 @@ class OTPView extends GetView {
             Text(
               'OTP Screen',
               style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.bold, fontSize: 70.0),
+                fontWeight: FontWeight.bold,
+                fontSize: 70.0,
+              ),
             ),
             OTPTextField(
               length: 6,
@@ -29,20 +31,16 @@ class OTPView extends GetView {
               style: const TextStyle(fontSize: 17),
               textFieldAlignment: MainAxisAlignment.spaceAround,
               fieldStyle: FieldStyle.underline,
-              onCompleted: (pin) {
-                otp = pin;
-                PhoneAuthController.instane.verifyOTP(otp);
-              },
+              onCompleted: (v) => controller.otpOnComplete(v),
+              onChanged: (v) {},
             ),
             const SizedBox(height: 20.0),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                  onPressed: () {
-                    PhoneAuthController.instane.verifyOTP(otp);
-                    Get.to(const PhoneAuthView());
-                  },
-                  child: const Text('Next')),
+                onPressed: () => controller.verifyOTP(controller.otp!),
+                child: const Text('Next'),
+              ),
             ),
           ],
         ),

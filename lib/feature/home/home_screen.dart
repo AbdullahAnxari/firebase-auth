@@ -1,13 +1,7 @@
 import '../../firebase_authentication.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
-
-  final User? user = Auth().currentUser;
-
-  Future<void> signOut() async {
-    await Auth().signOut();
-  }
+class HomePage extends GetView<HomeController> {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +26,12 @@ class HomePage extends StatelessWidget {
       );
 
   Widget _userUid() {
-    return Text(user?.email ?? 'user email');
+    return Text(controller.user!.email ?? 'user email');
   }
 
   Widget _signOutButton() {
     return ElevatedButton(
-      onPressed: signOut,
+      onPressed: controller.signOut,
       child: const Text('Sign Out'),
     );
   }

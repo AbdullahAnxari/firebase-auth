@@ -1,3 +1,9 @@
+import 'package:auth_firebase/exception_handling/login_with_anonymous_failure.dart';
+import 'package:auth_firebase/exception_handling/login_with_email_pass_failure.dart';
+import 'package:auth_firebase/exception_handling/login_with_facebook_failure.dart';
+import 'package:auth_firebase/exception_handling/login_with_google_failure.dart';
+import 'package:auth_firebase/exception_handling/phone_auth_failure.dart';
+
 import '../../firebase_authentication.dart';
 
 class LoginController extends GetxController {
@@ -8,6 +14,7 @@ class LoginController extends GetxController {
   final TextEditingController controllerEmail = TextEditingController();
   final TextEditingController controllerPassword = TextEditingController();
   final TextEditingController phone = TextEditingController();
+  final TextEditingController google = TextEditingController();
 
   //*SingIN
   Future<void> signInWithEmailAndPassword() async {
@@ -16,21 +23,9 @@ class LoginController extends GetxController {
         email: controllerEmail.text,
         password: controllerPassword.text,
       );
-    } on FirebaseAuthException catch (e) {
-      errorMessage = e.message;
-      update();
-    }
-  }
-
-  //*Register
-  Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Auth().createUserWithEmailAndPassword(
-        email: controllerEmail.text,
-        password: controllerPassword.text,
-      );
-    } on FirebaseAuthException catch (e) {
-      errorMessage = e.message;
+    } on FirebaseException catch (e) {
+      final newErrorMessage = LogInWithEmailAndPasswordFailure.fromCode(e.code);
+      Get.snackbar('Error', newErrorMessage.message);
       update();
     }
   }
@@ -39,8 +34,42 @@ class LoginController extends GetxController {
   Future<void> phoneAuthenticatio() async {
     try {
       await Auth().phoneAuthentication(phone.text);
-    } on FirebaseAuthException catch (e) {
-      errorMessage = e.message;
+    } on FirebaseException catch (e) {
+      final newErrorMessage = PhoneAuthFailure.fromCode(e.code);
+      Get.snackbar('Error', newErrorMessage.message);
+      update();
+    }
+  }
+
+  //*Google
+  Future<void> googleAuthentication() async {
+    try {
+      await Auth().signInWithGoogle();
+    } on FirebaseException catch (e) {
+      final newErrorMessage = LogInWithGoogleFailure.fromCode(e.code);
+      Get.snackbar('Error', newErrorMessage.message);
+      update();
+    }
+  }
+
+  //*Facebook
+  Future<void> facebookAuthentication() async {
+    try {
+      await Auth().signInWithFacebook();
+    } on FirebaseException catch (e) {
+      final newErrorMessage = LogInWithFacebookFailure.fromCode(e.code);
+      Get.snackbar('Error', newErrorMessage.message);
+      update();
+    }
+  }
+
+  //*Annymously
+  Future<void> anonymousLogin() async {
+    try {
+      await Auth().signInAnonumously();
+    } on FirebaseException catch (e) {
+      final newErrorMessage = LogInAnonymouslyFailure.fromCode(e.code);
+      Get.snackbar('Error', newErrorMessage.message);
       update();
     }
   }

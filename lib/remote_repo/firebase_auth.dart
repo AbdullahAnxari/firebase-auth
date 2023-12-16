@@ -1,3 +1,4 @@
+
 import '../firebase_authentication.dart';
 
 class Auth {
@@ -19,7 +20,7 @@ class Auth {
     await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
-    );
+    ); 
   }
 
   //*Register
@@ -72,4 +73,38 @@ class Auth {
     );
     return credentials.user != null ? true : false;
   }
+
+  //*Google
+  Future<UserCredential> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+    return await _firebaseAuth.signInWithCredential(credential);
+  }
+
+  //*Anonymous
+  Future<void> signInAnonumously() async {
+    try {
+      await _firebaseAuth.signInAnonymously();
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar('Anonymous', e.message!);
+    }
+  }
+
+  //*Facebook
+  Future<UserCredential> signInWithFacebook() async {
+  // Trigger the sign-in flow
+  final LoginResult loginResult = await FacebookAuth.instance.login();
+
+  // Create a credential from the access token
+  final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+  // Once signed in, return the UserCredential
+  return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+}
 }

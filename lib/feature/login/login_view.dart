@@ -17,11 +17,51 @@ class LoginView extends GetView<LoginController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _entryField('email', controller.controllerEmail),
-            _entryField('password', controller.controllerPassword),
+            _entryField('email', controller.controllerEmail, Icons.email),
+            const SizedBox(height: 10),
+            _entryField(
+                'password', controller.controllerPassword, Icons.password),
             _errorMessage(),
             _submitButton(),
             _loginOrRegistrationButton(),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //*Google
+                Column(
+                  children: [
+                    _socialLogo(
+                      icon: const Icon(Icons.login),
+                      onTap: controller.googleAuthentication,
+                    ),
+                    const Text('Google')
+                  ],
+                ),
+                const SizedBox(width: 20),
+                //*Facebook
+                Column(
+                  children: [
+                    _socialLogo(
+                      icon: const Icon(Icons.facebook),
+                      onTap: controller.facebookAuthentication,
+                    ),
+                    const Text('Facebook')
+                  ],
+                ),
+                const SizedBox(width: 20),
+                //*Anonymous
+                Column(
+                  children: [
+                    _socialLogo(
+                      icon: const Icon(Icons.login),
+                      onTap: controller.anonymousLogin,
+                    ),
+                    const Text('Anony')
+                  ],
+                ),
+              ],
+            )
           ],
         ),
       );
@@ -31,32 +71,64 @@ class LoginView extends GetView<LoginController> {
       );
 
   Widget _entryField(
-    String title,
-    TextEditingController controller,
-  ) {
+      String title, TextEditingController controller, IconData icon) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        labelText: title,
+        errorStyle: const TextStyle(height: 0),
+        hintStyle: const TextStyle(
+          color: Color(0xffADA4A5),
+        ),
+        border: InputBorder.none,
+        hintText: title,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(
+            top: 0.2,
+          ),
+          child: Icon(
+            icon,
+            color: const Color(0xff7B6F72),
+          ),
+        ),
       ),
     );
   }
 
   Widget _errorMessage() {
-    return Text(controller.errorMessage == '' ? '' : '${controller.errorMessage}');
+    return Text(
+        controller.errorMessage == '' ? '' : '${controller.errorMessage}');
   }
 
   Widget _submitButton() {
-    return ElevatedButton(
-      onPressed:
-          controller.isLogin ? controller.signInWithEmailAndPassword : controller.createUserWithEmailAndPassword,
-      child: Text(controller.isLogin ? 'Login' : 'Register'),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: controller.signInWithEmailAndPassword,
+        child: Text(controller.isLogin ? 'Login' : 'Register'),
+      ),
     );
   }
 
   Widget _loginOrRegistrationButton() {
     return TextButton(
-        onPressed: controller.func,
-        child: Text(controller.isLogin ? 'Register instead' : 'Login instead'));
+      onPressed: () => Get.to(const RegisterView()),
+      child: const Text('Register instead'),
+    );
   }
+
+  Widget _socialLogo({required Icon icon, required VoidCallback onTap}) =>
+      Column(
+        children: [
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: IconButton(
+              onPressed: onTap,
+              icon: icon,
+            ),
+          )
+        ],
+      );
 }
+
+
