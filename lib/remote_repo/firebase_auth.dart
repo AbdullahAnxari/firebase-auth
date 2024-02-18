@@ -30,15 +30,22 @@ class Auth {
   }
 
   //*Register
-  Future<void> createUserWithEmailAndPassword({
+  Future<Either<String, UserCredential>> createUserWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    debugPrint('Email $email');
+    try {
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return right(userCredential);
+      // debugPrint('Email $email');
+    } on FirebaseException catch (e) {
+      final error = SignUpWithEmailAndPasswordFailure.fromCode(e.code);
+      return left(error.message);
+    }
   }
 
   //*SignOut
@@ -112,11 +119,13 @@ class Auth {
   }
 
   //*Anonymous
-  Future<void> signInAnonumously() async {
+  Future<Either<String, UserCredential>> signInAnonumously() async {
     try {
-      await _firebaseAuth.signInAnonymously();
+      final result = await _firebaseAuth.signInAnonymously();
+      return right(result);
     } on FirebaseAuthException catch (e) {
-      Get.snackbar('Anonymous', e.message!);
+      final error = LogInAnonymouslyFailure.fromCode(e.code);
+      return left(error.message);
     }
   }
 

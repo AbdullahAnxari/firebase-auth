@@ -1,7 +1,7 @@
 //*FOLDERS
 export 'feature/feature.dart';
 export 'app_binding/app_binging.dart';
-export 'constant/constant.dart';
+export 'constants/contants.dart';
 export 'remote_repo/remote_repo.dart';
 export 'exception_handling/exception_handling.dart';
 
@@ -9,10 +9,15 @@ export 'exception_handling/exception_handling.dart';
 export 'package:flutter/material.dart';
 export 'package:firebase_core/firebase_core.dart';
 export 'package:get/get.dart';
+export '../connectivity/connectivity_controller.dart';
+
+// export 'package:get/get.dart' hide Response;
 export 'dart:convert';
 export 'package:flutter/foundation.dart';
 export 'package:auth_firebase/feature/home/controller.dart';
 export 'package:dartz/dartz.dart' hide State;
+// export 'package:http/http.dart'  hide MultipartFile ;
+
 
 export 'package:flutter_screenutil/flutter_screenutil.dart';
 export 'package:fluttertoast/fluttertoast.dart';

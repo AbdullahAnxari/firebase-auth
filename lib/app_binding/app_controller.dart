@@ -13,5 +13,6 @@ class AppBinding extends Bindings {
     Get.put(LoginController());
     Get.put(RegisterController());
     Get.put(HomeController());
+    Get.put(ConnectivityController());
   }
 }

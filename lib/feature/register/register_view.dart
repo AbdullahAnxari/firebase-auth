@@ -12,25 +12,29 @@ class RegisterView extends GetView<RegisterController> {
   }
 
   //*
-  Widget get _body => Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _textField('email', controller.controllerEmail, Icons.email),
-            const SizedBox(height: 10),
-            _textField(
-                'password', controller.controllerPassword, Icons.password),
-            _errorMessage(),
-            _submitButton(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: _loginOrRegistrationButton(),
-            ),
-          ],
-        ),
-      );
+  Widget get _body => GetBuilder<ConnectivityController>(initState: (_) {
+        ConnectivityController.instance.checkInternet();
+      }, builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _textField('email', controller.controllerEmail, Icons.email),
+              const SizedBox(height: 10),
+              _textField(
+                  'password', controller.controllerPassword, Icons.password),
+              _errorMessage(),
+              _submitButton(),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: _loginOrRegistrationButton(),
+              ),
+            ],
+          ),
+        );
+      });
 
   AppBar get _appBar => AppBar(
         title: const Text('Register Screen'),
@@ -72,10 +76,9 @@ class RegisterView extends GetView<RegisterController> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {
-          controller.createUserWithEmailAndPassword;
-          Get.to(const PhoneAuthView());
-        },
+        onPressed: controller.createUserWithEmailAndPassword,
+        // Get.to(const HomePage());
+
         child: const Text('Register'),
       ),
     );

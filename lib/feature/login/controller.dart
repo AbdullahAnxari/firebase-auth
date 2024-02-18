@@ -19,7 +19,10 @@ class LoginController extends GetxController {
 
     result.fold(
       (errorMessage) => Get.snackbar('Error', errorMessage),
-      (userCredentail) => null,
+      (userCredentail) => {
+        HomeController.instance.setUser(u: userCredentail.user!),
+        Get.offAll(() => const HomePage()),
+      },
     );
   }
 
@@ -36,35 +39,38 @@ class LoginController extends GetxController {
   //*Google
   Future<void> googleAuthentication() async {
     final result = await Auth.instance.signInWithGoogle();
+
     result.fold(
       (errorMessage) => Get.snackbar('Error', errorMessage),
-      (r) => null,
+      (userCredential) => {
+        HomeController.instance.setUser(u: userCredential.user!),
+        Get.offAll(() => const HomePage()),
+      },
     );
   }
 
   //*Facebook
   Future<void> facebookAuthentication() async {
     final result = await Auth.instance.signInWithFacebook();
+
     result.fold(
       (errorMessage) => Get.snackbar('Error', errorMessage),
-      (r) => null,
+      (userCredential) => {
+        HomeController.instance.setUser(u: userCredential.user!),
+        Get.offAll(() => const HomePage()),
+      },
     );
   }
 
   //*Annymously
   Future<void> anonymousLogin() async {
-    try {
-      await Auth().signInAnonumously();
-    } on FirebaseException catch (e) {
-      final newErrorMessage = LogInAnonymouslyFailure.fromCode(e.code);
-      Get.snackbar('Error', newErrorMessage.message);
-      update();
-    }
-  }
-
-  //*onPressed
-  void func() {
-    isLogin = !isLogin;
-    update();
+    final result = await Auth().signInAnonumously();
+    result.fold(
+      (errorMessage) => Get.snackbar('Error', errorMessage),
+      (userCredential) => {
+        HomeController.instance.setUser(u: userCredential.user!),
+        Get.offAll(() => const HomePage()),
+      },
+    );
   }
 }

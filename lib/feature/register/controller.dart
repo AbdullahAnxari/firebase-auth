@@ -6,19 +6,23 @@ class RegisterController extends GetxController {
   String? errorMessage = '';
   final TextEditingController controllerEmail = TextEditingController();
   final TextEditingController controllerPassword = TextEditingController();
-
+ 
   //*Register
   Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Auth().createUserWithEmailAndPassword(
-        email: controllerEmail.text,
-        password: controllerPassword.text,
-      );
-    } on FirebaseException catch (e) {
-      final newErrorMessage =
-          SignUpWithEmailAndPasswordFailure.fromCode(e.code);
-      Get.snackbar('Error', newErrorMessage.message);
-      update();
-    } 
+    final result = await Auth().createUserWithEmailAndPassword(
+      email: controllerEmail.text,
+      password: controllerPassword.text,
+    );
+    result.fold(
+      (errorMessage) => Get.snackbar('Error', errorMessage),
+      (userCredential) => {
+        HomeController.instance.setUser(u: userCredential.user!),
+        Get.offAll(() => const HomePage()),
+      },
+    );
+    // final newErrorMessage =
+    //     SignUpWithEmailAndPasswordFailure.fromCode(e.code);
+    // Get.snackbar('Error', newErrorMessage.message);
+    // update();
   }
 }

@@ -1,3 +1,5 @@
+import 'package:auth_firebase/feature/otp_screen/otp_screen.dart';
+
 import '../../firebase_authentication.dart';
 
 class LoginView extends GetView<LoginController> {
@@ -24,6 +26,10 @@ class LoginView extends GetView<LoginController> {
             _errorMessage(),
             _submitButton(),
             _loginOrRegistrationButton(),
+            const SizedBox(height: 20),
+            SizedBox(width: double.infinity,
+            child: ElevatedButton(onPressed: ()=> Get.to(const OTPView()), child: const Text('Login with OTP')),
+            ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
